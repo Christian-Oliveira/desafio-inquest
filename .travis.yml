@@ -8,7 +8,10 @@ branches:
 
 # Start services.
 services:
-  - postgresql
+  - docker-compose
+
+before_install:
+- docker-compose up
 
 # command to install dependencies.
 install: "pip install -r requirements.txt"
@@ -16,5 +19,5 @@ install: "pip install -r requirements.txt"
 before_script:
   - cp .env.example .env
 script:
-  - python manage.py migrate
+  - docker-compose exec web python manage.py migrate
 sudo: false
