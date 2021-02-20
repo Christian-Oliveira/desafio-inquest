@@ -18,4 +18,4 @@ before_install:
 before_script:
   - cp .env.example .env
 script:
- - docker-compose up --build
+  - docker-compose up -d
