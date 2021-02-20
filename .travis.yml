@@ -19,3 +19,4 @@ before_script:
   - cp .env.example .env
 script:
   - docker-compose up -d
+  - docker-compose exec web python manage.py migrate
