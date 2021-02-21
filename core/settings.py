@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
 
     #Apps
+    'people',
 ]
 
 MIDDLEWARE = [
@@ -138,8 +139,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 LOGIN_URL = 'api-auth/login/'
 LOGOUT_URL = 'api-auth/logout/'
 
+APPEND_SLASH=False
 
 #Django Rest Framework
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }
