@@ -8,9 +8,12 @@ from ..serializers import PeopleSerializer
 
 # Create your tests here.
 
+URL_PEOPLE_LIST = "people:people-list"
+URL_PERSON_DETAIL = "people:person-detail"
+
 class TestGetPeople(TestCase):
     """
-    Esta classe testa as rotas GET do app People.
+    Esta classe testa a lista de varias pessoas e a visualização de uma unica pessoa
     """
     def setUp(self):
         self.person1 = PeopleModel.objects.create(
@@ -25,7 +28,7 @@ class TestGetPeople(TestCase):
 
     ## Testar listar todas as pessoas.
     def test_get_all_people(self):
-        response = self.client.get(reverse("people:people-list"))
+        response = self.client.get(reverse(URL_PEOPLE_LIST))
         people = PeopleModel.objects.all()
         serializer = PeopleSerializer(people, many=True)
         self.assertEqual(response.data, serializer.data)
@@ -34,7 +37,7 @@ class TestGetPeople(TestCase):
     ## Testar pegar uma pessoa valida.
     def test_get_valid_person(self):
         response = self.client.get(
-            reverse("people:person-detail", kwargs={'pk': self.person1.pk}))
+            reverse(URL_PERSON_DETAIL, kwargs={'pk': self.person1.pk}))
         person = PeopleModel.objects.get(pk=self.person1.pk)
         serializer = PeopleSerializer(person)
         self.assertEqual(response.data, serializer.data)
@@ -43,12 +46,12 @@ class TestGetPeople(TestCase):
     # Testar pegar uma pessoa invalida.
     def test_get_invalid_person(self):
         response = self.client.get(
-            reverse("people:person-detail", kwargs={'pk': 404}))
+            reverse(URL_PERSON_DETAIL, kwargs={'pk': 404}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-class TestPostPerson(TestCase):
+class TestPostSinglePerson(TestCase):
     """
-    Esta classe testa a rota POST do app People.
+    Esta classe testa a criação de uma unica pessoa
     """
     def setUp(self):
         self.valid_data = {
@@ -67,7 +70,7 @@ class TestPostPerson(TestCase):
 
     def test_create_valid_person(self):
         response = self.client.post(
-            reverse("people:people-list"),
+            reverse(URL_PEOPLE_LIST),
             data=json.dumps(self.valid_data),
             content_type='application/json'
         )
@@ -75,15 +78,15 @@ class TestPostPerson(TestCase):
 
     def test_create_invalid_person(self):
         response = self.client.post(
-            reverse("people:people-list"),
+            reverse(URL_PEOPLE_LIST),
             data=json.dumps(self.invalid_data),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-class TestPutPerson(TestCase):
+class TestPutSinglePerson(TestCase):
     """
-    Esta classe testa a rota PUT
+    Esta classe testa a atualização de uma unica pessoa
     """
 
     def setUp(self):
@@ -96,15 +99,15 @@ class TestPutPerson(TestCase):
         }
 
         self.invalid_data = {
-            "people_type": "X",
-            "name": "Empresa Test",
+            "people_type": "J",
+            "name": "",
             "cnpj": "9876543214321",
             "email": "teste@hotmail.com"
         }
 
     def test_valid_update_person(self):
         response = self.client.put(
-            reverse("people:person-detail", kwargs={'pk': self.person.pk}),
+            reverse(URL_PERSON_DETAIL, kwargs={'pk': self.person.pk}),
             data=json.dumps(self.valid_data),
             content_type='application/json'
         )
@@ -112,15 +115,15 @@ class TestPutPerson(TestCase):
 
     def test_invalid_update_person(self):
         response = self.client.put(
-            reverse("people:person-detail", kwargs={'pk': self.person.pk}),
+            reverse(URL_PERSON_DETAIL, kwargs={'pk': self.person.pk}),
             data=json.dumps(self.invalid_data),
             content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class DeleteSinglePuppyTest(TestCase):
+class TestDeleteSinglePerson(TestCase):
     """
-    Esta classe testa a rota DELETE
+    Esta classe testa a exclusão de uma unica pessoa
     """
     def setUp(self):
         self.person1 = PeopleModel.objects.create(
@@ -132,10 +135,10 @@ class DeleteSinglePuppyTest(TestCase):
 
     def test_valid_delete_person(self):
         response = self.client.delete(
-            reverse("people:person-detail", kwargs={'pk': self.person2.pk}))
+            reverse(URL_PERSON_DETAIL, kwargs={'pk': self.person2.pk}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_invalid_delete_person(self):
         response = self.client.delete(
-            reverse("people:person-detail", kwargs={'pk': 404}))
+            reverse(URL_PERSON_DETAIL, kwargs={'pk': 404}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
