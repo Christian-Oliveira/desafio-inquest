@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     #Apps
     'people',
+    'assets',
 ]
 
 MIDDLEWARE = [
