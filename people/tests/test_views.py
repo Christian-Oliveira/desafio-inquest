@@ -151,7 +151,10 @@ class TestDeleteSinglePerson(TestCase):
 
     def test_valid_delete_person(self):
         response = self.client.delete(
-            reverse(URL_PERSON_DETAIL, kwargs={'pk': self.person2.pk}))
+            reverse(URL_PERSON_DETAIL, kwargs={'pk': self.person2.pk})
+        )
+        person2 = PeopleModel.objects.filter(pk=self.person2.pk)
+        self.assertEqual(len(person2), 0)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_invalid_delete_person(self):
