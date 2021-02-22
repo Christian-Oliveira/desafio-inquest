@@ -27,5 +27,5 @@ Criar uma API Rest para as seguintes funções:
 9. entrar com os dados e pronto.
 
 ## EXECUTAR TESTES ✅
-1. Para executar teste para dar o sequinte comando:
+1. Para executar os testes basta dar o sequinte comando:
     ```docker-compose exec web python manage.py test```
