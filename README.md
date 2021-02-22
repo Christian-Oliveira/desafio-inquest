@@ -1,6 +1,6 @@
 # Desafio Inquest [![Build Status](https://travis-ci.org/Christian-Oliveira/desafio-inquest.svg?branch=master)](https://travis-ci.org/Christian-Oliveira/desafio-inquest)
 
-## Objetivo
+## OBJETIVO 📝
 Criar uma API Rest para as seguintes funções:
 - Registro de pessoas, a partir do CPF;
 
@@ -8,10 +8,11 @@ Criar uma API Rest para as seguintes funções:
 
 - Registro de bens e posses de um indivíduo.
 
-## GERAR SECRET_KEY (Se Necessário)
+## GERAR SECRET_KEY (Se Necessário) 🔒
 1. Comando para gerar secret_key django
     ```python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'```
-## COMO RODAR
+
+## COMO EXECUTAR 🔥
 1. Para rodar é necessario ter o Docker e o docker-compose instalados
 2. Após isso basta executar o comando
     ```docker-compose up --build```
@@ -24,3 +25,7 @@ Criar uma API Rest para as seguintes funções:
 8. basta criar um superusuario com
     ```docker-compose exec web python manage.py createsuperuser```
 9. entrar com os dados e pronto.
+
+## EXECUTAR TESTES ✅
+1. Para executar teste para dar o sequinte comando:
+    ```docker-compose exec web python manage.py test```
