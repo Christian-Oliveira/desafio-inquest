@@ -4,7 +4,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from .models import PeopleModel
-from .serializers import PeopleSerializer
+from .serializers import PeopleSerializer, PeopleCreateSerializer
 
 # Create your views here.
 
@@ -18,7 +18,7 @@ class PeopleList(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = PeopleSerializer(data=request.data)
+        serializer = PeopleCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -35,7 +35,7 @@ class PeopleDetail(APIView):
 
     def put(self, request, pk):
         person = get_object_or_404(PeopleModel, pk=pk)
-        serializer = PeopleSerializer(person, data=request.data, partial=True)
+        serializer = PeopleCreateSerializer(person, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
