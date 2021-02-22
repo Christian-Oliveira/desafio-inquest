@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
+from assets.models import AssetsModel
 from .models import PeopleModel
 
 class PeopleSerializer(serializers.ModelSerializer):
     owners = serializers.StringRelatedField(many=True)
+    assets = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = PeopleModel
@@ -15,9 +17,18 @@ class PeopleSerializer(serializers.ModelSerializer):
             'cnpj',
             'email',
             'owners',
+            'assets',
             'created_at',
             'updated_at',
             'active',
+        ]
+        read_only_fields = [
+            'id', 
+            'owners',
+            'assets',
+            'created_at', 
+            'updated_at', 
+            'active'
         ]
 
 class PeopleCreateSerializer(serializers.ModelSerializer):
