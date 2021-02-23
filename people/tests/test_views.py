@@ -55,48 +55,138 @@ class TestPostSinglePerson(TestCase):
     """
     def setUp(self):
         self.person = PeopleModel.objects.create(
-            people_type='F', name='Christian Oliveira', cpf='03083236298', email='christian@gmail.com'
+            people_type='F', name='Christian Oliveira', cpf='12358877798', email='christian@gmail.com'
         )
 
-        self.valid_data = {
+        self.valid_data_person_cpf = {
             "people_type": "F",
             "name": "Jose Silva",
             "cpf": "15326136418",
             "email": "jose@hotmail.com"
         }
 
-        self.invalid_data = {
-            "people_type": "F",
-            "name": "Jose Silva",
-            "cpf": "15326136418",
-            "email": ""
+        self.valid_data_person_cnpj = {
+            "people_type": "J",
+            "name": "Empresa ABC",
+            "cnpj": "15987425896312",
+            "email": "empresa.abc@hotmail.com",
+            "owners": [self.person.pk]
         }
 
-    def test_create_valid_person(self):
+    # Testa o cadastro de uma Pessoa Fisica com dados validos 
+    def test_create_valid_person_cpf(self):
         response = self.client.post(
             reverse(URL_PEOPLE_LIST),
-            data=json.dumps(self.valid_data),
+            data=json.dumps(self.valid_data_person_cpf),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_invalid_person(self):
+    # Testa o cadastro de uma Pessoa Fisica com dados invalidos
+    def test_create_invalid_person_cpf(self):
+        self.valid_data_person_cpf.update({'cpf': ''})
         response = self.client.post(
             reverse(URL_PEOPLE_LIST),
-            data=json.dumps(self.invalid_data),
+            data=json.dumps(self.valid_data_person_cpf),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # Testa o cadastro de uma Pessoa Juridica com dados validos 
+    def test_create_valid_person_cnpj(self):
+        response = self.client.post(
+            reverse(URL_PEOPLE_LIST),
+            data=json.dumps(self.valid_data_person_cnpj),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    # Testa o cadastro de uma Pessoa Juridica com dados invalidos
+    def test_create_invalid_person_cnpj(self):
+        self.valid_data_person_cnpj.update({'cnpj': ''})
+        response = self.client.post(
+            reverse(URL_PEOPLE_LIST),
+            data=json.dumps(self.valid_data_person_cnpj),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # Testa o cadastro de uma Pessoa Fisica com CPF menor que o padrão 11
+    def test_min_length_cpf(self):
+        self.valid_data_person_cpf.update({'cpf': '15326'})
+        response = self.client.post(
+            reverse(URL_PEOPLE_LIST),
+            data=json.dumps(self.valid_data_person_cpf),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # Testa o cadastro de uma Pessoa Fisica com CPF maior que o padrão 11
+    def test_max_length_cpf(self):
+        self.valid_data_person_cpf.update({'cpf': '15326136418000'})
+        response = self.client.post(
+            reverse(URL_PEOPLE_LIST),
+            data=json.dumps(self.valid_data_person_cpf),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # Testa o cadastro de uma Pessoa Juridica com CNPJ menor que o padrão 14
+    def test_min_length_cnpj(self):
+        self.valid_data_person_cnpj.update({'cnpj': '159'})
+        response = self.client.post(
+            reverse(URL_PEOPLE_LIST),
+            data=json.dumps(self.valid_data_person_cnpj),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    # Testa o cadastro de uma Pessoa Juridica com CNPJ maior que o padrão 14
+    def test_max_length_cnpj(self):
+        self.valid_data_person_cnpj.update({'cnpj': '15987425896312555'})
+        response = self.client.post(
+            reverse(URL_PEOPLE_LIST),
+            data=json.dumps(self.valid_data_person_cnpj),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     # Testa o NÂO cadastro de pessoas fisica com donos (proprietarios)
     def test_not_owners_in_person_cpf(self):
+        self.valid_data_person_cpf.update({"owners": [self.person.pk]})
         response = self.client.post(
             reverse(URL_PEOPLE_LIST),
-            data=json.dumps(self.valid_data.update({"owners": [self.person.pk]})),
+            data=json.dumps(self.valid_data_person_cpf),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    # Testa a criação de uma pessoa com seus Ativos
+    def test_create_person_with_assets(self):
+        self.valid_data_person_cnpj.update({'assets': [
+            {
+                "assets_type": "IMO",
+                "code": 123,
+                "description": "Apartamento de Vista ao Mar",
+                "acquisition_form": "DOA",
+                "localization": "Brasil-Maranhão-São Luís"
+            },
+            {
+                "assets_type": "MOV",
+                "code": 43,
+                "description": "Jato particular",
+                "acquisition_form": "HER",
+                "localization": "Brasil-Maranhão-São Luís"
+            }
+        ]})
+        response = self.client.post(
+            reverse(URL_PEOPLE_LIST),
+            data=self.valid_data_person_cnpj,
+            content_type='application/json'
+        )
+        self.assertNotEqual(len(response.data['assets']), 0)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
 class TestPutSinglePerson(TestCase):
     """
     Esta classe testa a atualização de uma unica pessoa
@@ -109,14 +199,14 @@ class TestPutSinglePerson(TestCase):
         self.valid_data = {
             "people_type": "J",
             "name": "Empresa Test 2",
-            "cnpj": "9876543214321",
+            "cnpj": "99876543214321",
             "email": "teste2@hotmail.com"
         }
 
         self.invalid_data = {
             "people_type": "J",
             "name": "",
-            "cnpj": "9876543214321",
+            "cnpj": "99876543214321",
             "email": "teste@hotmail.com"
         }
 

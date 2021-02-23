@@ -28,7 +28,7 @@ class AssetsModel(BaseModel):
         DOA = 'DOA', _('DOADO')
         HER = 'HER', _('HERDADO')
 
-    person            = models.ForeignKey(PeopleModel, related_name='assets', on_delete=models.CASCADE)
+    person            = models.ForeignKey(PeopleModel, related_name='assets', blank=True, on_delete=models.CASCADE)
     assets_type       = models.CharField(_('Tipo de Ativo'), max_length=3, choices=AssetsType.choices)
     code              = models.PositiveSmallIntegerField(_('Código'))
     description       = models.TextField(_('Descrição'))
